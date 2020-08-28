@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <title>Title</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poor+Story&display=swap" rel="stylesheet">
+    <style>
+        .mytitle{
+            width : 400px;
+            margin : 20px auto;
+        }
+        .bt{
+            text-align : center;
+        }
+        .font-size20{
+            font-size : 25px;
+        }
+        .font-size15{
+            font-size : 20px;
+        }
+        *{
+            font-family: 'Poor Story', cursive;
+        }
+        .text_blue{
+            color : blue;
+            font-weight : bold;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+                $("#order-box").html("");
+                Showbuy();
+        });
+
+        function buy(){
+            let or_name = $("#order-name").val();
+            let or_count = $("#order-count").val();
+            let or_address = $("#order-address").val();
+            let or_phone = $("#order-phone").val();
+
+            $.ajax({
+                 type: "POST",
+                 url: "/order",
+                 data: {name_give: or_name, count_give: or_count, address_give: or_address, phone_give :or_phone },
+                 success: function (response) {
+                     if (response["result"] == "success") {
+                         alert("주문 성공");
+                         window.location.reload();
+                     }
+                     else{
+                        alert("서버 오류.");
+                     }
+                 }
+            })
+        }
+
+        function Showbuy() {
+                $.ajax({
+                    type: "GET",
+                    url: "/order",
+                    data: {},
+                    success: function (response) {
+                       let orders = response["orders"];
+                       console.log(orders)
+                       for(let i = 0; i < orders.length; i++){
+                           makeCard(orders[i]["Name"], orders[i]["Count"], orders[i]["Phone"], orders[i]["Address"]);
+                       }
+                    }
+                })
+            }
+        function makeCard(name, count, phone, address){
+            let order_card = `<tr>
+                                  <td>${name}</td>
+                                  <td>${count}</td>
+                                  <td>${address}</td>
+                                  <td>${phone}</td>
+                              </tr>`;
+
+            $("#order-box").append(order_card);
+        }
+    </script>
+    <script>
+        $(document).ready(function(){
+            $.ajax({
+              type: "GET",
+              url: "https://api.manana.kr/exchange/rate.json",
+              data: {},
+              success: function(response){
+
+              let exchange_rate = response[1]['rate'];
+              let ex_bx = `<p class = "text_blue">달러-원 환율 : ${exchange_rate}원</p>`;
+              $('#exchange_rb').append(ex_bx);
+              }
+            })
+        });
+    </script>
+</head>
+<div class = 'mytitle'>
+<div>
+    <img src="https://i.pinimg.com/originals/f4/61/2a/f4612aba9ebec9350cf7a74554d43f57.jpg" width="400">
+</div>
+<div>
+    <div>
+    <span class = "font-size20">양초를 팝니다.</span>
+    <span class = "font-size15">가격 : 3000원/개</span>
+    </div>
+    <h10>이 양초는 사실 특별한 향을 가지고 있어요. 양초를 켜고 소원을 빌면 짜자잔 뭐든지 이뤄진답니다. 빨리 사가세요 향이 좋아요!</h10>
+    <div id="exchange_rb">
+    </div>
+</div>
+<div>
+<body>
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">주문자 이름</span>
+  </div>
+  <input type="text" class="form-control" id = "order-name" placeholder="" aria-label="Username" aria-describedby="basic-addon1">
+</div>
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+        <label class="input-group-text" for="inputGroupSelect01">수량</label>
+    </div>
+    <select class="custom-select" id = "order-count">
+        <option selected>수량을 선택하세요.</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+    </select>
+</div>
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon3">주소</span>
+  </div>
+  <input type="text" class="form-control" id = "order-address" placeholder="" aria-label="Username" aria-describedby="basic-addon1">
+</div>
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon4">전화번호</span>
+  </div>
+  <input type="text" class="form-control" id = "order-phone" placeholder="" aria-label="Username" aria-describedby="basic-addon1">
+</div>
+</body>
+</div>
+<div class="bt">
+    <button onclick="buy()" type="button" class="btn btn-primary btn-sm">주문하기</button>
+</div>
+<div class = "order_card_box">
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">이름</th>
+      <th scope="col">수량</th>
+      <th scope="col">주소</th>
+      <th scope="col">전화번호</th>
+    </tr>
+  </thead>
+  <tbody id = "order-box">
+    <tr>
+      <td>name</td>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</html>
